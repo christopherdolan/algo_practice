@@ -15,7 +15,7 @@ public class Top5 {
 
 	public static List<String> top5(String stanza) {
 		List<String> results = new ArrayList<String>();
-		List<String> words = Arrays.asList(stanza.split(" "));
+		List<String> words = Arrays.asList(stanza.replaceAll("[\\.;,:]+","").split(" "));
 		Map<String, Integer> frequencyMap = new HashMap<String, Integer>();
 		for (String word : words) {
 			frequencyMap.put(word, frequencyMap.containsKey(word) ? frequencyMap.get(word) + 1 : 1);
@@ -25,7 +25,11 @@ public class Top5 {
 					new Comparator<Entry<String,Integer>>() {
 						public int compare(	Entry<String, Integer> first,
 											Entry<String, Integer> second) {
-												return second.getValue() - first.getValue();
+							if (second.getValue().compareTo(first.getValue()) == 0) {
+								return first.getKey().compareTo(second.getKey());
+							} else {
+								return second.getValue().compareTo(first.getValue());
+							}
 						}
 					}
 			);
@@ -33,9 +37,8 @@ public class Top5 {
 		Iterator<Entry<String,Integer>> resultSetIter = resultSet.iterator();
 		
 		for (int i = 0; i < 5; i++) {
-			Entry<String, Integer> entry = resultSetIter.next();
-			if (entry != null) {
-				results.add(entry.getKey());
+			while (resultSetIter.hasNext()) {
+				results.add(resultSetIter.next().getKey());
 			}
 		}
 		return results;
